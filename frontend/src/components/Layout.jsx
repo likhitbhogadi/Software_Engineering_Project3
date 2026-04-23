@@ -34,8 +34,7 @@ export default function Layout({ children }) {
             <>
               <span className="topnav-role">{user.role}</span>
               <span
-                style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'none' }}
-                className="user-name-desktop"
+                style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}
               >
                 {user.name}
               </span>

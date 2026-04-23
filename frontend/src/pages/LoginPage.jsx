@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { loginUser } from '../services/authService.js';
+import { loginUser, registerUser } from '../services/authService.js';
 import Alert from '../components/Alert.jsx';
 import Spinner from '../components/Spinner.jsx';
 
@@ -32,7 +32,6 @@ export default function LoginPage() {
       if (tab === 'login') {
         data = await loginUser(form.email, form.password);
       } else {
-        const { registerUser } = await import('../services/authService.js');
         data = await registerUser(form.name, form.email, form.password, form.role);
       }
       login(data.user, data.token);

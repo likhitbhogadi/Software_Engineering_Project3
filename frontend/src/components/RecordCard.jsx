@@ -24,6 +24,10 @@ export default function RecordCard({ record }) {
       className="card fade-up"
       style={{ padding: '14px 16px', cursor: 'pointer' }}
       onClick={() => setExpanded((p) => !p)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && setExpanded((p) => !p)}
+      aria-expanded={expanded}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontSize: '1.3rem' }}>{meta.emoji}</span>
