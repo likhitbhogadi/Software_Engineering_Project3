@@ -8,6 +8,46 @@ const EVENT_LABELS = {
   GENERAL_CHECKUP:  { label: 'General Checkup',  emoji: '❤️' },
 };
 
+const FIELD_LABELS = {
+  lmpDate: 'LMP Date',
+  weight: 'Weight (kg)',
+  bp: 'BP (mmHg)',
+  riskFactors: 'Risk Factors',
+  vaccineName: 'Vaccine Name',
+  doseNumber: 'Dose Number',
+  nextDueDate: 'Next Due Date',
+  birthWeight: 'Birth Weight (kg)',
+  deliveryMode: 'Delivery Mode',
+  breastfeedingStatus: 'Breastfeeding Status',
+  symptoms: 'Symptoms',
+  duration: 'Duration',
+  suspectedDisease: 'Suspected Disease',
+  temperature: 'Temperature (°C)',
+  heartRate: 'Heart Rate (bpm)',
+  chiefComplaint: 'Chief Complaint',
+  medications: 'Medications',
+  notes: 'Notes',
+};
+
+function EventDataDisplay({ data }) {
+  if (!data || typeof data !== 'object') return <div>No data available</div>;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {Object.entries(data).map(([key, value]) => {
+        if (!value) return null;
+        const label = FIELD_LABELS[key] || key;
+        return (
+          <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem' }}>
+            <span style={{ color: 'var(--text-muted)' }}>{label}:</span>
+            <span style={{ fontWeight: 500, color: 'var(--teal)' }}>{String(value)}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function RecordCard({ record }) {
   const [expanded, setExpanded] = useState(false);
   const meta = EVENT_LABELS[record.eventType] || { label: record.eventType, emoji: '📋' };
@@ -61,21 +101,16 @@ export default function RecordCard({ record }) {
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 6 }}>
             ASHA ID: <span className="mono">{record.ashaId}</span>
           </div>
-          <pre
+          <div
             style={{
               background: 'var(--navy)',
               borderRadius: 6,
               padding: '10px 12px',
-              fontSize: '0.78rem',
-              color: 'var(--teal)',
-              overflow: 'auto',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-all',
-              maxHeight: 180,
+              border: '1px solid var(--border)',
             }}
           >
-            {JSON.stringify(record.eventData, null, 2)}
-          </pre>
+            <EventDataDisplay data={record.eventData} />
+          </div>
         </div>
       )}
     </div>

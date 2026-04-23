@@ -21,10 +21,18 @@ const EVENT_TYPES = [
   { value: 'GENERAL_CHECKUP',  label: '❤️ General Checkup' },
 ];
 
+const EVENT_DATA_TEMPLATES = {
+  MATERNAL_CARE:    { lmpDate: '', weight: '', bp: '', riskFactors: '', notes: '' },
+  IMMUNIZATION:     { vaccineName: '', doseNumber: '', nextDueDate: '', notes: '' },
+  NEWBORN_CARE:     { birthWeight: '', deliveryMode: '', breastfeedingStatus: '', notes: '' },
+  DISEASE_TRACKING: { symptoms: '', duration: '', suspectedDisease: '', notes: '' },
+  GENERAL_CHECKUP:  { temperature: '', heartRate: '', chiefComplaint: '', medications: '', notes: '' },
+};
+
 const BLANK_FORM = {
   patientId: '',
   eventType: 'MATERNAL_CARE',
-  eventData: '{\n  \n}',
+  eventData: { ...EVENT_DATA_TEMPLATES.MATERNAL_CARE },
 };
 
 export default function AshaDashboard() {
@@ -55,21 +63,27 @@ export default function AshaDashboard() {
 
   const set = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
-    if (field === 'eventData') setJsonError('');
+  };
+
+  const setEventData = (field) => (e) => {
+    setForm((f) => ({
+      ...f,
+      eventData: { ...f.eventData, [field]: e.target.value },
+    }));
+  };
+
+  const handleTypeChange = (e) => {
+    const newType = e.target.value;
+    setForm((f) => ({
+      ...f,
+      eventType: newType,
+      eventData: { ...EVENT_DATA_TEMPLATES[newType] },
+    }));
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     setSaveMsg({ type: '', text: '' });
-
-    // Validate JSON
-    let parsedData;
-    try {
-      parsedData = JSON.parse(form.eventData);
-    } catch {
-      setJsonError('Event Data must be valid JSON.');
-      return;
-    }
 
     if (!form.patientId.trim()) {
       setSaveMsg({ type: 'error', text: 'Patient ID is required.' });
@@ -84,7 +98,7 @@ export default function AshaDashboard() {
         ashaId: user?.id || user?.email || 'unknown',
         timestamp: new Date().toISOString(),
         eventType: form.eventType,
-        eventData: parsedData,
+        eventData: form.eventData,
       };
       await saveRecordOffline(record);
       setSaveMsg({ type: 'success', text: `Record saved locally for patient ${record.patientId}.` });
@@ -199,7 +213,7 @@ export default function AshaDashboard() {
 
           <div className="field">
             <label htmlFor="eventType">Event Type</label>
-            <select id="eventType" value={form.eventType} onChange={set('eventType')}>
+            <select id="eventType" value={form.eventType} onChange={handleTypeChange}>
               {EVENT_TYPES.map((et) => (
                 <option key={et.value} value={et.value}>
                   {et.label}
@@ -208,21 +222,59 @@ export default function AshaDashboard() {
             </select>
           </div>
 
-          <div className="field">
-            <label htmlFor="eventData">
-              Event Data <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(JSON)</span>
-            </label>
-            <textarea
-              id="eventData"
-              value={form.eventData}
-              onChange={set('eventData')}
-              rows={6}
-              placeholder={'{\n  "key": "value"\n}'}
-              spellCheck={false}
-            />
-            {jsonError && (
-              <span style={{ fontSize: '0.75rem', color: 'var(--red)' }}>{jsonError}</span>
+          <div className="fields-grid">
+            {form.eventType === 'MATERNAL_CARE' && (
+              <>
+                <div className="field"><label>LMP Date</label><input type="date" value={form.eventData.lmpDate} onChange={setEventData('lmpDate')} /></div>
+                <div className="field"><label>Weight (kg)</label><input type="number" placeholder="0.0" value={form.eventData.weight} onChange={setEventData('weight')} /></div>
+                <div className="field"><label>BP (mmHg)</label><input type="text" placeholder="120/80" value={form.eventData.bp} onChange={setEventData('bp')} /></div>
+                <div className="field"><label>Risk Factors</label><input type="text" placeholder="None" value={form.eventData.riskFactors} onChange={setEventData('riskFactors')} /></div>
+              </>
             )}
+
+            {form.eventType === 'IMMUNIZATION' && (
+              <>
+                <div className="field"><label>Vaccine Name</label><input type="text" placeholder="e.g. BCG" value={form.eventData.vaccineName} onChange={setEventData('vaccineName')} /></div>
+                <div className="field"><label>Dose Number</label><input type="text" placeholder="1st dose" value={form.eventData.doseNumber} onChange={setEventData('doseNumber')} /></div>
+                <div className="field"><label>Next Due Date</label><input type="date" value={form.eventData.nextDueDate} onChange={setEventData('nextDueDate')} /></div>
+              </>
+            )}
+
+            {form.eventType === 'NEWBORN_CARE' && (
+              <>
+                <div className="field"><label>Birth Weight (kg)</label><input type="number" placeholder="0.0" value={form.eventData.birthWeight} onChange={setEventData('birthWeight')} /></div>
+                <div className="field"><label>Delivery Mode</label><input type="text" placeholder="Normal / C-Section" value={form.eventData.deliveryMode} onChange={setEventData('deliveryMode')} /></div>
+                <div className="field"><label>Breastfeeding Status</label><input type="text" placeholder="Started immediately?" value={form.eventData.breastfeedingStatus} onChange={setEventData('breastfeedingStatus')} /></div>
+              </>
+            )}
+
+            {form.eventType === 'DISEASE_TRACKING' && (
+              <>
+                <div className="field"><label>Symptoms</label><input type="text" placeholder="Fever, cough..." value={form.eventData.symptoms} onChange={setEventData('symptoms')} /></div>
+                <div className="field"><label>Duration</label><input type="text" placeholder="3 days" value={form.eventData.duration} onChange={setEventData('duration')} /></div>
+                <div className="field" style={{ gridColumn: '1 / -1' }}><label>Suspected Disease</label><input type="text" placeholder="Malaria" value={form.eventData.suspectedDisease} onChange={setEventData('suspectedDisease')} /></div>
+              </>
+            )}
+
+            {form.eventType === 'GENERAL_CHECKUP' && (
+              <>
+                <div className="field"><label>Temperature (°C)</label><input type="text" placeholder="37.0" value={form.eventData.temperature} onChange={setEventData('temperature')} /></div>
+                <div className="field"><label>Heart Rate (bpm)</label><input type="text" placeholder="72" value={form.eventData.heartRate} onChange={setEventData('heartRate')} /></div>
+                <div className="field"><label>Chief Complaint</label><input type="text" placeholder="Back pain" value={form.eventData.chiefComplaint} onChange={setEventData('chiefComplaint')} /></div>
+                <div className="field"><label>Medications</label><input type="text" placeholder="Paracetamol" value={form.eventData.medications} onChange={setEventData('medications')} /></div>
+              </>
+            )}
+
+            <div className="field" style={{ gridColumn: '1 / -1' }}>
+              <label>Additional Notes</label>
+              <textarea
+                rows={2}
+                placeholder="Any additional information..."
+                value={form.eventData.notes}
+                onChange={setEventData('notes')}
+                style={{ resize: 'vertical' }}
+              />
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>

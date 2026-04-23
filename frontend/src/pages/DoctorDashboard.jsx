@@ -100,7 +100,7 @@ export default function DoctorDashboard() {
       {/* Search form */}
       <div className="card fade-up">
         <h2 style={styles.sectionTitle}>🔍 Search Patient</h2>
-        <form onSubmit={handleSearch} noValidate style={{ display: 'flex', gap: 10 }}>
+        <form onSubmit={handleSearch} noValidate className="search-form">
           <input
             id="patientIdSearch"
             type="text"
