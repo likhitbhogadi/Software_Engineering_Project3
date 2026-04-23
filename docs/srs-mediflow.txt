@@ -1,0 +1,442 @@
+﻿📄 SOFTWARE REQUIREMENTS 
+SPECIFICATION (SRS) 
+MediFlow Prototype – Offline-First Patient Data System 
+
+ 
+
+1. Introduction 
+1.1 Purpose 
+This document specifies the requirements for the MediFlow prototype system implementing: 
+
+Offline-first healthcare data collection by ASHA workers, synchronization to a 
+centralized system, and fast retrieval of patient data by healthcare providers. 
+
+ 
+
+1.2 Scope 
+The system enables: 
+
+●​ ASHA workers to collect diverse healthcare data offline using a PWA 
+●​ Reliable data synchronization to centralized services 
+●​ Doctors to retrieve patient history quickly 
+
+The prototype demonstrates: 
+
+●​ Event-Driven Microservices Architecture (Hybrid) 
+●​ CQRS-based data management 
+●​ Role-Based Access Control (RBAC) 
+●​ Offline-first operation 
+
+ 
+
+1.3 Definitions 
+
+
+
+Term Description 
+
+ASHA Accredited Social Health Activist 
+
+CQRS Command Query Responsibility 
+Segregation 
+
+Event Healthcare interaction record 
+
+PWA Progressive Web App 
+
+RBAC Role-Based Access Control 
+
+ 
+
+2. Overall Description 
+ 
+
+2.1 Product Perspective 
+The system follows a Hybrid Event-Driven Microservices Architecture: 
+
+●​ Microservices → domain-based services with independent databases 
+●​ Publish–Subscribe → asynchronous communication via event bus 
+●​ CQRS → separate read and write models 
+●​ REST APIs → synchronous operations where required 
+
+ 
+
+2.2 User Classes 
+
+
+
+User Description 
+
+ASHA Worker Records patient data 
+offline 
+
+Doctor / Medical Officer Retrieves patient data 
+
+System Services Internal processing 
+
+ 
+
+2.3 Operating Environment 
+●​ ASHA Interface: Progressive Web App (React-based) 
+●​ Doctor Interface: Web Dashboard 
+●​ Backend: Node.js microservices 
+●​ Databases: MongoDB (multiple databases) 
+●​ Event Bus: In-memory (prototype) / Kafka (production) 
+●​ Optional Cache: Redis 
+
+ 
+
+2.4 Design Constraints 
+●​ Prototype-level infrastructure 
+●​ Simplified event bus allowed 
+●​ Limited deployment complexity 
+
+ 
+
+3. Functional Requirements 
+ 
+
+🟩 FR1: Offline Patient Data Capture 
+
+
+
+ASHA workers shall record patient data using a Progressive Web App (PWA). 
+
+Details: 
+
+●​ Works offline using Service Workers 
+●​ Stores data in IndexedDB 
+●​ Responsive UI for mobile/tablets 
+
+ 
+
+🟩 FR2: Flexible Event-Based Data Model 
+System shall support diverse healthcare data using extensible schema: 
+
+{ 
+
+  "recordId": "...", 
+
+  "patientId": "...", 
+
+  "ashaId": "...", 
+
+  "timestamp": "...", 
+
+  "eventType": "...", 
+
+  "eventData": {} 
+
+} 
+
+ 
+
+Supports: 
+
+●​ Maternal care 
+●​ Immunization 
+●​ Newborn care 
+●​ Disease tracking 
+●​ General checkups 
+
+ 
+
+🟩 FR3: Data Synchronization 
+System shall synchronize offline data when connectivity is available. 
+
+
+
+Details: 
+
+●​ Batch upload of unsynced records 
+●​ Retry on failure 
+●​ Idempotent processing 
+
+ 
+
+🟩 FR4: Centralized Patient Data Storage (Write Model) 
+System shall store patient data in a central write database. 
+
+Details: 
+
+●​ Append-only event storage 
+●​ Maintains full patient history 
+
+ 
+
+🟩 FR5: Event Publication 
+System shall publish an event after successful data storage: 
+
+PatientDataSynced 
+
+ 
+
+ 
+
+🟩 FR6: Read Model Generation 
+System shall maintain a query-optimized patient read model. 
+
+Details: 
+
+●​ Derived from events 
+●​ Stores aggregated patient data 
+
+ 
+
+🟩 FR7: Patient Data Retrieval 
+Doctors shall retrieve patient data via API: 
+
+
+
+GET /patients/{id} 
+
+ 
+
+ 
+
+🟩 FR8: Role-Based Access Control (RBAC) 
+System shall enforce role-based access. 
+
+Roles: 
+
+Role Permissions 
+
+ASHA Worker Create and sync 
+records 
+
+Doctor Read patient data 
+
+System Internal operations 
+
+Implementation: 
+
+●​ JWT-based authentication 
+●​ Middleware-based authorization 
+
+ 
+
+4. Non-Functional Requirements 
+ 
+
+⚡ NFR1: Performance 
+●​ API response time < 2 seconds 
+●​ Achieved via CQRS + caching 
+
+
+
+ 
+
+📶 NFR2: Offline Capability 
+●​ 100% offline data capture 
+●​ Achieved via PWA + IndexedDB 
+
+ 
+
+📈 NFR3: Scalability 
+●​ Microservices architecture 
+●​ Independent service scaling 
+
+ 
+
+🌐 NFR4: Availability 
+●​ Offline-first ensures availability 
+●​ Stateless backend services 
+
+ 
+
+🔒 NFR5: Reliability 
+●​ No data loss 
+●​ Retry + local persistence 
+
+ 
+
+🔐 NFR6: Security 
+●​ Role-based access control 
+●​ Secure APIs 
+
+ 
+
+5. Architectural Design 
+ 
+
+
+
+5.1 Architecture Style 
+Event-Driven Microservices (Hybrid) 
+
+ 
+
+5.2 Architectural Patterns 
+●​ Microservices → domain-based services 
+●​ CQRS → separate read/write models 
+●​ Publish–Subscribe → event-driven communication 
+
+ 
+
+5.3 Architectural Tactics 
+●​ Caching 
+
+○​ IndexedDB (offline cache) 
+○​ Read Model (query cache) 
+○​ Redis (optional) 
+
+●​ Retry Mechanism 
+●​ Idempotency 
+
+ 
+
+5.4 Microservices and Bounded Contexts 
+
+Service Context Database 
+
+Auth Service Security auth_db 
+
+Sync Service Data Sync sync_db 
+
+Write Service Patient Write patient_write_db 
+
+
+
+Read Service Patient patient_read_db 
+Query 
+
+Each service: 
+
+●​ Owns its database 
+●​ Communicates via APIs/events 
+
+ 
+
+5.5 Event-Driven Architecture (Concrete Implementation) 
+ 
+
+🔷 Event Bus 
+
+The system shall include an Event Bus to enable asynchronous communication. 
+
+●​ Prototype: In-memory event bus 
+●​ Production: Kafka 
+
+ 
+
+🔷 Core Event 
+
+{ 
+
+  "eventType": "PatientDataSynced", 
+
+  "patientId": "...", 
+
+  "timestamp": "...", 
+
+  "payload": { 
+
+    "eventType": "...", 
+
+    "eventData": {} 
+
+  } 
+
+} 
+
+ 
+
+
+
+ 
+
+🔷 Publish–Subscribe Flow 
+
+●​ Publisher: Write Service 
+●​ Subscriber: Read Service 
+
+Write Service → Event Bus → Read Service 
+
+ 
+
+ 
+
+🔷 Characteristics 
+
+●​ Loose coupling 
+●​ Asynchronous processing 
+●​ Extensibility (new services can subscribe) 
+
+ 
+
+6. System Workflow 
+ 
+
+End-to-End Flow 
+1.​ User logs in → Auth Service (JWT issued) 
+2.​ ASHA enters data offline → IndexedDB 
+3.​ Sync triggered → Sync Service 
+4.​ Sync Service validates and forwards data 
+5.​ Write Service stores data in write DB 
+6.​ Write Service publishes PatientDataSynced event 
+7.​ Event Bus distributes event 
+8.​ Read Service consumes event and updates read DB 
+9.​ Doctor retrieves data via Read Service 
+
+ 
+
+7. Data Requirements 
+
+
+
+ 
+
+7.1 Write Model 
+●​ Stores patient event history 
+●​ Source of truth 
+
+ 
+
+7.2 Read Model 
+●​ Aggregated patient view 
+●​ Optimized for queries 
+
+ 
+
+8. Security Requirements 
+ 
+
+●​ JWT-based authentication 
+●​ Role-based authorization 
+●​ Secure API endpoints 
+
+ 
+
+9. Assumptions 
+ 
+
+●​ ASHA workers use mobile browsers 
+●​ Network connectivity is intermittent 
+●​ Doctors require fast data access 
+
+ 
+
+10. Acceptance Criteria 
+ 
+
+
+
+✔ ASHA can enter data offline​
+✔ Data persists across reload​
+✔ Sync works correctly​
+✔ Events are published and consumed​
+✔ Read model updates correctly​
+✔ Doctor retrieves data quickly​
+✔ RBAC enforced 
+
+ 
+
+11. Conclusion 
+ 
+
+This prototype demonstrates: 
+
+●​ Offline-first healthcare system 
+●​ Event-driven microservices architecture 
+●​ CQRS-based performance optimization 
+●​ Scalable, secure, and extensible system design
