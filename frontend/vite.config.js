@@ -48,10 +48,10 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api/auth':     { target: 'http://localhost:5001', changeOrigin: true, rewrite: (p) => p.replace(/^\/api\/auth/, '') },
-      '/api/sync':     { target: 'http://localhost:5002', changeOrigin: true, rewrite: (p) => p.replace(/^\/api\/sync/, '') },
-      '/api/write':    { target: 'http://localhost:5003', changeOrigin: true, rewrite: (p) => p.replace(/^\/api\/write/, '') },
-      '/api/patients': { target: 'http://localhost:5004', changeOrigin: true, rewrite: (p) => p.replace(/^\/api\/patients/, '/patients') },
+      '/api/auth':     { target: 'http://localhost:5001', changeOrigin: true },
+      '/api/sync':     { target: 'http://localhost:5002', changeOrigin: true },
+      '/api/write':    { target: 'http://localhost:5003', changeOrigin: true },
+      '/api/patients': { target: 'http://localhost:5004', changeOrigin: true },
     },
   },
 });

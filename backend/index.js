@@ -26,18 +26,22 @@ const path = require('path');
 // Auth Service
 require('dotenv').config({ path: path.join(__dirname, 'auth-service', '.env') });
 require('./auth-service/src/server');
+delete process.env.MONGO_URI;
 
 // Sync Service
 require('dotenv').config({ path: path.join(__dirname, 'sync-service', '.env') });
 require('./sync-service/src/server');
+delete process.env.MONGO_URI;
 
 // Write Service
 require('dotenv').config({ path: path.join(__dirname, 'write-service', '.env') });
 require('./write-service/src/server');
+delete process.env.MONGO_URI;
 
 // Read Service — must load AFTER write-service so eventBus module is cached
 require('dotenv').config({ path: path.join(__dirname, 'read-service', '.env') });
 require('./read-service/src/server');
+delete process.env.MONGO_URI;
 
 console.log('\n🚀 MediFlow Prototype — All services started');
 console.log('   Auth Service  → http://localhost:5001');
