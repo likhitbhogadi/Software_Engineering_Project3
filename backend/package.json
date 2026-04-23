@@ -13,6 +13,7 @@
     "read": "cd read-service && npm run dev"
   },
   "dependencies": {
+    "axios": "^1.15.2",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
