@@ -24,22 +24,18 @@ const path = require('path');
 // ─── Load each service's env before requiring its server ───────────────────
 
 // Auth Service
-process.env.PORT = '5001';
 require('dotenv').config({ path: path.join(__dirname, 'auth-service', '.env') });
 require('./auth-service/src/server');
 
 // Sync Service
-process.env.PORT = '5002';
 require('dotenv').config({ path: path.join(__dirname, 'sync-service', '.env') });
 require('./sync-service/src/server');
 
 // Write Service
-process.env.PORT = '5003';
 require('dotenv').config({ path: path.join(__dirname, 'write-service', '.env') });
 require('./write-service/src/server');
 
 // Read Service — must load AFTER write-service so eventBus module is cached
-process.env.PORT = '5004';
 require('dotenv').config({ path: path.join(__dirname, 'read-service', '.env') });
 require('./read-service/src/server');
 
