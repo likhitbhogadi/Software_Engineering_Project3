@@ -1,0 +1,20 @@
+{
+  "name": "mediflow-read-service",
+  "version": "1.0.0",
+  "description": "MediFlow Read Service - CQRS query model, subscribes to events, serves patient data to doctors",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

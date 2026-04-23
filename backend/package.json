@@ -1,0 +1,21 @@
+{
+  "name": "mediflow-backend",
+  "version": "1.0.0",
+  "description": "MediFlow Prototype Backend — Offline-First Patient Data System",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "install:all": "cd auth-service && npm install && cd ../sync-service && npm install && cd ../write-service && npm install && cd ../read-service && npm install",
+    "auth": "cd auth-service && npm run dev",
+    "sync": "cd sync-service && npm run dev",
+    "write": "cd write-service && npm run dev",
+    "read": "cd read-service && npm run dev"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
